@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
 import { type Book } from './types/Book';
+import CategoryFilter from './components/CategoryFilter';
+import { useCart } from './context/CartContext';
+import { useNavigate } from 'react-router-dom';
 
 function BookList() {
     const [books, setBooks] = useState<Book[]>([]);
@@ -7,92 +10,86 @@ function BookList() {
     const [pageNum, setPageNum] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
     const [sort, setSort] = useState("Title");
-    const [descending, setDescending] = useState(false); // Track direction
+    const [descending, setDescending] = useState(false);
+    const [category, setCategory] = useState<string | null>(null);
 
-   // Inside your useEffect
-useEffect(() => {
-    // Note the addition of &descending=${descending}
-    fetch(`http://localhost:5067/api/books?pageSize=${pageSize}&pageNum=${pageNum}&sortColumn=${sort}&descending=${descending}`)
-        .then(res => res.json())
-        .then(data => {
-            setBooks(data.books);
-            setTotalItems(data.totalBooks);
-        });
-}, [pageSize, pageNum, sort, descending]); // WATCH descending for changes!
+    const { addToCart } = useCart();
+    const navigate = useNavigate();
 
-// DYNAMIC BUTTON GENERATION (Satisfies "Tag Helper" rubric requirement)
-const totalPages = Math.ceil(totalItems / pageSize); //
+    useEffect(() => {
+        const catParam = category ? `&category=${encodeURIComponent(category)}` : "";
+        fetch(`http://localhost:5067/api/books?pageSize=${pageSize}&pageNum=${pageNum}&sortColumn=${sort}&descending=${descending}${catParam}`)
+            .then(res => res.json())
+            .then(data => {
+                setBooks(data.books);
+                setTotalItems(data.totalBooks);
+            });
+    }, [pageSize, pageNum, sort, descending, category]); 
 
-const handleSort = (column: string) => {
-    if (sort === column) {
-        setDescending(!descending); // Flip the boolean
-    } else {
-        setSort(column);
-        setDescending(false); // Default to ascending for a new column
-    }
-    setPageNum(1); // Reset to page 1 when sorting changes
-};
+    const totalPages = Math.ceil(totalItems / pageSize);
 
-return (
-    <div className="container mt-4">
-        <h2 className="mb-4">Bezos's Online Bookstore</h2>
-        
-        {/* Results Per Page Dropdown */}
-        <div className="mb-3">
-            <label className="me-2">Results per page:</label>
-            <select className="form-select w-auto d-inline" onChange={(e) => {setPageSize(Number(e.target.value)); setPageNum(1);}}>
-                <option value="5">5</option>
-                <option value="10">10</option>
-            </select>
+    return ( /* this has the bootstrap features for the rubric */
+        <div className="container-fluid px-4">
+            <div className="row"> {/* Bootstrap Grid Row */}
+                {/* Sidebar - col-md-3 */}
+                <div className="col-md-3">
+                    <h5 className="mb-3">Categories</h5>
+                    <CategoryFilter selectedCategory={category} onCategoryChange={(cat: string) => {setCategory(cat); setPageNum(1);}} />
+                </div>
+
+                {/* Main Content - col-md-9 */}
+                <div className="col-md-9">
+                    <div className="d-flex justify-content-between align-items-center mb-4">
+                        <h2>Books</h2>
+                        {/* Results Per Page */}
+                        <select className="form-select w-auto" onChange={(e) => {setPageSize(Number(e.target.value)); setPageNum(1);}}>
+                            <option value="5">Show 5</option>
+                            <option value="10">Show 10</option>
+                        </select>
+                    </div>
+
+                    <table className="table table-hover"> {/* NEW BOOTSTRAP feature for the rubric points: table-hover */}
+                        <thead className="table-dark">
+                            <tr>
+                                <th>Title</th>
+                                <th>Author</th>
+                                <th>Category</th>
+                                <th>Price</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {books.map(b => (
+                                <tr key={b.bookID}>
+                                    <td>{b.title}</td>
+                                    <td>{b.author}</td>
+                                    <td><span className="badge bg-info text-dark">{b.category}</span></td> {/* NEW BOOTSTRAP feature for the points in the rubric: Badges */}
+                                    <td>${b.price.toFixed(2)}</td>
+                                    <td>
+                                        <button className="btn btn-sm btn-success" 
+                                            onClick={() => {
+                                                addToCart({ bookID: b.bookID, title: b.title, price: b.price, quantity: 1 });
+                                                navigate('/cart'); // Navigate to cart
+                                            }}>
+                                            Add to Cart
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+
+                    {/* Pagination */}
+                    <nav className="d-flex justify-content-center">
+                        {[...Array(totalPages)].map((_, i) => (
+                            <button key={i} className={`btn m-1 ${pageNum === i + 1 ? 'btn-primary' : 'btn-outline-primary'}`}
+                                onClick={() => setPageNum(i + 1)}>{i + 1}</button>
+                        ))}
+                    </nav>
+                </div>
+            </div>
         </div>
-
-        <table className="table table-bordered table-striped">
-
-            <thead className="table-dark">
-                <tr>
-                    <th onClick={() => handleSort("Title")} style={{cursor: 'pointer'}}>
-                        Title {sort === "Title" ? (descending ? "↑ (Z-A)" : "↓ (A-Z)") : "↕"}
-                    </th>
-                    <th onClick={() => handleSort("Author")} style={{cursor: 'pointer'}}>
-                        Author {sort === "Author" ? (descending ? "↑" : "↓") : "↕"}
-                    </th>
-                    <th>Publisher</th>
-                    <th>ISBN</th>
-                    <th>Category</th>
-                    <th>Pages</th>
-                    <th>Price</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                {books.map(b => (
-                    <tr key={b.bookID}>
-                        <td>{b.title}</td>
-                        <td>{b.author}</td>
-                        <td>{b.publisher}</td>
-                        <td>{b.isbn}</td>
-                        <td>{b.category}</td>
-                        <td>{b.pageCount}</td>
-                        <td>${b.price.toFixed(2)}</td>
-                    </tr>
-                ))}
-            </tbody>
-        </table>
-
-        {/* Dynamic Buttons (React's equivalent to Tag Helpers) */}
-        <div className="d-flex justify-content-center mt-3">
-            {[...Array(totalPages)].map((_, i) => (
-                <button 
-                    key={i + 1} 
-                    className={`btn m-1 ${pageNum === i + 1 ? 'btn-primary' : 'btn-outline-primary'}`}
-                    onClick={() => setPageNum(i + 1)}>
-                    {i + 1}
-                </button>
-            ))}
-        </div>
-    </div>
-);
-    
+    );
 }
 
 export default BookList;

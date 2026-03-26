@@ -1,6 +1,8 @@
 import './App.css';
-import 'bootstrap/dist/css/bootstrap.min.css'; // Don't forget this for styling!
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { Routes, Route } from 'react-router-dom'; // Add this
 import BookList from './BookList';
+import CartPage from './Pages/CartPage'; // Import your new CartPage
 
 function App() {
   return (
@@ -11,7 +13,11 @@ function App() {
         </div>
       </header>
       <main>
-        <BookList />
+        {/* Define the navigation map */}
+        <Routes>
+          <Route path="/" element={<BookList />} />
+          <Route path="/cart" element={<CartPage />} />
+        </Routes>
       </main>
     </div>
   );
