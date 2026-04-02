@@ -1,8 +1,9 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Routes, Route } from 'react-router-dom'; // Add this
+import { Routes, Route } from 'react-router-dom';
 import BookList from './BookList';
-import CartPage from './Pages/CartPage'; // Import your new CartPage
+import CartPage from './Pages/CartPage'; 
+import AdminBooks from './Pages/AdminBooks';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Routes>
           <Route path="/" element={<BookList />} />
           <Route path="/cart" element={<CartPage />} />
+          <Route path="/adminbooks" element={<AdminBooks />} />
         </Routes>
       </main>
     </div>

@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/8995c661-16c3-4c6e-82a1-041a271229b0/resourceGroups/appsvc_windows_eastus/providers/Microsoft.Web/sites/wheelerbookstore",
+    "appService.deploySubpath": "backend/Bookstore.API/publish"
+}
