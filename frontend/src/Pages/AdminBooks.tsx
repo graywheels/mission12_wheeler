@@ -7,81 +7,141 @@ function AdminBooks() {
     const [editingBook, setEditingBook] = useState<Book | null>(null);
     const [showAddForm, setShowAddForm] = useState(false);
 
-    const refreshData = () => {
-        fetch('https://wheelerbookstore-fehyb7gteadufee5.eastus-01.azurewebsites.net/api/books?pageSize=100')
-            .then(res => res.json())
-            .then(data => setBooks(data.books));
+    // Function to fetch the most recent data from Azure
+    const refreshData = async () => {
+        try {
+            const response = await fetch('https://wheelerbookstore-fehyb7gteadufee5.eastus-01.azurewebsites.net/api/books?pageSize=100');
+            const data = await response.json();
+            setBooks(data.books);
+        } catch (error) {
+            console.error("Error fetching books:", error);
+        }
     };
 
-    useEffect(() => { refreshData(); }, []);
+    useEffect(() => { 
+        refreshData(); 
+    }, []);
 
     const handleDelete = async (id: number) => {
-        if (window.confirm("Are you sure you want to delete this book?")) { // Defensive confirmation
+        if (window.confirm("Are you sure you want to delete this book?")) {
             await deleteBook(id);
-            refreshData(); // Refresh list after deletion
+            await refreshData(); // Wait for the refresh to finish
         }
     };
 
     return (
         <div className="container mt-4">
-            <div className="d-flex justify-content-between mb-3">
-                <h2>Admin: Manage Books</h2>
-                <button className="btn btn-primary" onClick={() => setShowAddForm(true)}>Add New Book</button>
+            <div className="d-flex justify-content-between align-items-center mb-4">
+                <h2>Admin: Manage Inventory</h2>
+                <button 
+                    className="btn btn-primary" 
+                    onClick={() => { setEditingBook(null); setShowAddForm(true); }}
+                >
+                    + Add New Book
+                </button>
             </div>
 
-            {/* Conditional Rendering: Show form only if adding or editing */}
+            {/* Form Section */}
             {(showAddForm || editingBook) && (
-                <BookForm 
-                    book={editingBook} 
-                    onSuccess={() => { setEditingBook(null); setShowAddForm(false); refreshData(); }} 
-                    onCancel={() => { setEditingBook(null); setShowAddForm(false); }}
-                />
+                <div className="card shadow-sm mb-5">
+                    <div className="card-body">
+                        <BookForm 
+                            book={editingBook} 
+                            onSuccess={async () => { 
+                                setEditingBook(null); 
+                                setShowAddForm(false); 
+                                await refreshData(); 
+                            }} 
+                            onCancel={() => { 
+                                setEditingBook(null); 
+                                setShowAddForm(false); 
+                            }}
+                        />
+                    </div>
+                </div>
             )}
 
-            <table className="table table-striped table-bordered mt-3">
-                <thead className="table-dark">
-                    <tr>
-                        <th>ID</th>
-                        <th>Title</th>
-                        <th>Author</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {books.map(b => (
-                        <tr key={b.bookID}>
-                            <td>{b.bookID}</td>
-                            <td>{b.title}</td>
-                            <td>{b.author}</td>
-                            <td>
-                                <button className="btn btn-warning btn-sm me-2" onClick={() => setEditingBook(b)}>Edit</button>
-                                <button className="btn btn-danger btn-sm" onClick={() => handleDelete(b.bookID)}>Delete</button>
-                            </td>
+            {/* Inventory Table */}
+            <div className="table-responsive">
+                <table className="table table-hover table-bordered shadow-sm">
+                    <thead className="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Author</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th className="text-center">Actions</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {books.map(b => (
+                            <tr key={b.bookID}>
+                                <td>{b.bookID}</td>
+                                <td><strong>{b.title}</strong></td>
+                                <td>{b.author}</td>
+                                <td><span className="badge bg-secondary">{b.category}</span></td>
+                                <td>${b.price.toFixed(2)}</td>
+                                <td className="text-center">
+                                    <button 
+                                        className="btn btn-warning btn-sm me-2" 
+                                        onClick={() => { setShowAddForm(false); setEditingBook(b); }}
+                                    >
+                                        Edit
+                                    </button>
+                                    <button 
+                                        className="btn btn-danger btn-sm" 
+                                        onClick={() => handleDelete(b.bookID)}
+                                    >
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 }
 
+// Sub-component for the Add/Edit Form
 function BookForm({ book, onSuccess, onCancel }: any) {
-    // Two-way data binding: link value to state
-    const [formData, setFormData] = useState(book || { title: '', author: '', publisher: '', isbn: '', classification: '', category: '', pageCount: 0, price: 0 });
+    const initialFormState = {
+        title: '',
+        author: '',
+        publisher: '',
+        isbn: '',
+        classification: '',
+        category: '',
+        pageCount: 0,
+        price: 0
+    };
+
+    const [formData, setFormData] = useState(book || initialFormState);
+
+    // CRITICAL: Update the form fields if the "book" prop changes (e.g., clicking Edit on a different row)
+    useEffect(() => {
+        setFormData(book || initialFormState);
+    }, [book]);
 
     const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault(); // Stop page reload
-        if (book) {
-            await updateBook(book.bookID, formData);
-        } else {
-            await addBook(formData);
+        e.preventDefault();
+        try {
+            if (book) {
+                await updateBook(book.bookID, formData);
+            } else {
+                await addBook(formData);
+            }
+            await onSuccess();
+        } catch (error) {
+            alert("Error saving book. Check your console and CORS settings.");
         }
-        onSuccess();
     };
 
     return (
-        <form onSubmit={handleSubmit} className="p-4 border rounded bg-light mb-4">
-            <h4>{book ? 'Edit Book' : 'Add New Book'}</h4>
+        <form onSubmit={handleSubmit}>
+            <h4 className="mb-3">{book ? `Editing: ${book.title}` : 'Add New Book'}</h4>
             <div className="row g-3">
                 <div className="col-md-6">
                     <label className="form-label">Title</label>
@@ -91,11 +151,30 @@ function BookForm({ book, onSuccess, onCancel }: any) {
                     <label className="form-label">Author</label>
                     <input className="form-control" value={formData.author} onChange={e => setFormData({...formData, author: e.target.value})} required />
                 </div>
-                {/* Repeat pattern for other required fields like Category, ISBN, Price */}
+                <div className="col-md-4">
+                    <label className="form-label">Category</label>
+                    <input className="form-control" value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} required />
+                </div>
+                <div className="col-md-4">
+                    <label className="form-label">Price</label>
+                    <input type="number" step="0.01" className="form-control" value={formData.price} onChange={e => setFormData({...formData, price: parseFloat(e.target.value)})} required />
+                </div>
+                <div className="col-md-4">
+                    <label className="form-label">ISBN</label>
+                    <input className="form-control" value={formData.isbn} onChange={e => setFormData({...formData, isbn: e.target.value})} required />
+                </div>
+                <div className="col-md-6">
+                    <label className="form-label">Publisher</label>
+                    <input className="form-control" value={formData.publisher} onChange={e => setFormData({...formData, publisher: e.target.value})} required />
+                </div>
+                <div className="col-md-6">
+                    <label className="form-label">Classification</label>
+                    <input className="form-control" value={formData.classification} onChange={e => setFormData({...formData, classification: e.target.value})} required />
+                </div>
             </div>
-            <div className="mt-3">
-                <button type="submit" className="btn btn-success me-2">Save Changes</button>
-                <button type="button" className="btn btn-secondary" onClick={onCancel}>Cancel</button>
+            <div className="mt-4">
+                <button type="submit" className="btn btn-success me-2 px-4">Save to Database</button>
+                <button type="button" className="btn btn-outline-secondary px-4" onClick={onCancel}>Cancel</button>
             </div>
         </form>
     );
