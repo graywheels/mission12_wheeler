@@ -17,7 +17,7 @@ builder.Services.AddDbContext<BookstoreContext>(options =>
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReact",
-        policy => policy.WithOrigins("http://localhost:5173") 
+        policy => policy.WithOrigins("http://localhost:5173", "https://wheelerbookstore-fehyb7gteadufee5.eastus-01.azurewebsites.net/")
             .AllowAnyMethod()
             .AllowAnyHeader());
 });

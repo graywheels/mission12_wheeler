@@ -8,7 +8,7 @@ function AdminBooks() {
     const [showAddForm, setShowAddForm] = useState(false);
 
     const refreshData = () => {
-        fetch('http://localhost:5067/api/books?pageSize=100')
+        fetch('https://wheelerbookstore-fehyb7gteadufee5.eastus-01.azurewebsites.net/api/books?pageSize=100')
             .then(res => res.json())
             .then(data => setBooks(data.books));
     };
@@ -16,9 +16,9 @@ function AdminBooks() {
     useEffect(() => { refreshData(); }, []);
 
     const handleDelete = async (id: number) => {
-        if (window.confirm("Are you sure?")) {
+        if (window.confirm("Are you sure you want to delete this book?")) { // Defensive confirmation
             await deleteBook(id);
-            refreshData();
+            refreshData(); // Refresh list after deletion
         }
     };
 
@@ -29,6 +29,7 @@ function AdminBooks() {
                 <button className="btn btn-primary" onClick={() => setShowAddForm(true)}>Add New Book</button>
             </div>
 
+            {/* Conditional Rendering: Show form only if adding or editing */}
             {(showAddForm || editingBook) && (
                 <BookForm 
                     book={editingBook} 
@@ -43,8 +44,6 @@ function AdminBooks() {
                         <th>ID</th>
                         <th>Title</th>
                         <th>Author</th>
-                        <th>Category</th>
-                        <th>Price</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -54,8 +53,6 @@ function AdminBooks() {
                             <td>{b.bookID}</td>
                             <td>{b.title}</td>
                             <td>{b.author}</td>
-                            <td>{b.category}</td>
-                            <td>${b.price.toFixed(2)}</td>
                             <td>
                                 <button className="btn btn-warning btn-sm me-2" onClick={() => setEditingBook(b)}>Edit</button>
                                 <button className="btn btn-danger btn-sm" onClick={() => handleDelete(b.bookID)}>Delete</button>
@@ -68,12 +65,12 @@ function AdminBooks() {
     );
 }
 
-// Internal Form Component for Add/Edit
 function BookForm({ book, onSuccess, onCancel }: any) {
+    // Two-way data binding: link value to state
     const [formData, setFormData] = useState(book || { title: '', author: '', publisher: '', isbn: '', classification: '', category: '', pageCount: 0, price: 0 });
 
     const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+        e.preventDefault(); // Stop page reload
         if (book) {
             await updateBook(book.bookID, formData);
         } else {
@@ -85,19 +82,19 @@ function BookForm({ book, onSuccess, onCancel }: any) {
     return (
         <form onSubmit={handleSubmit} className="p-4 border rounded bg-light mb-4">
             <h4>{book ? 'Edit Book' : 'Add New Book'}</h4>
-            <div className="row">
-                <div className="col-md-6 mb-2">
-                    <label>Title</label>
+            <div className="row g-3">
+                <div className="col-md-6">
+                    <label className="form-label">Title</label>
                     <input className="form-control" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} required />
                 </div>
-                <div className="col-md-6 mb-2">
-                    <label>Author</label>
+                <div className="col-md-6">
+                    <label className="form-label">Author</label>
                     <input className="form-control" value={formData.author} onChange={e => setFormData({...formData, author: e.target.value})} required />
                 </div>
+                {/* Repeat pattern for other required fields like Category, ISBN, Price */}
             </div>
-            {/* Add other fields (Category, Price, etc.) here similarly */}
             <div className="mt-3">
-                <button type="submit" className="btn btn-success me-2">Save</button>
+                <button type="submit" className="btn btn-success me-2">Save Changes</button>
                 <button type="button" className="btn btn-secondary" onClick={onCancel}>Cancel</button>
             </div>
         </form>

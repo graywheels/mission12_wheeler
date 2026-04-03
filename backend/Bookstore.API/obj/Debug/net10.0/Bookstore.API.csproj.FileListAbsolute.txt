@@ -62,3 +62,9 @@
 /Users/graywheeler/Desktop/bookstore/backend/Bookstore.API/bin/Debug/net10.0/runtimes/win-x64/native/e_sqlite3.dll
 /Users/graywheeler/Desktop/bookstore/backend/Bookstore.API/bin/Debug/net10.0/runtimes/win-x86/native/e_sqlite3.dll
 /Users/graywheeler/Desktop/bookstore/backend/Bookstore.API/obj/Debug/net10.0/Bookstore.API.sourcelink.json
+/Users/graywheeler/Desktop/bookstore/backend/Bookstore.API/bin/Debug/net10.0/publish/web.config
+/Users/graywheeler/Desktop/bookstore/backend/Bookstore.API/bin/Debug/net10.0/publish/appsettings.Development.json
+/Users/graywheeler/Desktop/bookstore/backend/Bookstore.API/bin/Debug/net10.0/publish/appsettings.json
+/Users/graywheeler/Desktop/bookstore/backend/Bookstore.API/bin/Debug/net10.0/publish/Bookstore.API.deps.json
+/Users/graywheeler/Desktop/bookstore/backend/Bookstore.API/bin/Debug/net10.0/publish/Bookstore.API.runtimeconfig.json
+/Users/graywheeler/Desktop/bookstore/backend/Bookstore.API/bin/Debug/net10.0/publish/Bookstore.API.staticwebassets.endpoints.json

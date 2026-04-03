@@ -4,7 +4,7 @@ function CategoryFilter({ selectedCategory, onCategoryChange }: any) {
     const [categories, setCategories] = useState<string[]>([]);
 
     useEffect(() => {
-        fetch('http://localhost:5067/api/books/categories')
+        fetch('https://wheelerbookstore-fehyb7gteadufee5.eastus-01.azurewebsites.net/api/books/categories')
             .then(res => res.json())
             .then(data => setCategories(data));
     }, []);

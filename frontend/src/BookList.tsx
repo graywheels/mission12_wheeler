@@ -18,7 +18,7 @@ function BookList() {
 
     useEffect(() => {
         const catParam = category ? `&category=${encodeURIComponent(category)}` : "";
-        fetch(`http://localhost:5067/api/books?pageSize=${pageSize}&pageNum=${pageNum}&sortColumn=${sort}&descending=${descending}${catParam}`)
+        fetch(`https://wheelerbookstore-fehyb7gteadufee5.eastus-01.azurewebsites.net/api/books?pageSize=${pageSize}&pageNum=${pageNum}&sortColumn=${sort}&descending=${descending}${catParam}`)
             .then(res => res.json())
             .then(data => {
                 setBooks(data.books);
