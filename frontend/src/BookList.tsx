@@ -9,8 +9,8 @@ function BookList() {
     const [pageSize, setPageSize] = useState(5);
     const [pageNum, setPageNum] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
-    const [sort, setSort] = useState("Title");
-    const [descending, setDescending] = useState(false);
+    const [sort] = useState("Title");
+    const [descending] = useState(false);
     const [category, setCategory] = useState<string | null>(null);
 
     const { addToCart } = useCart();
