@@ -1,12 +1,6 @@
 /Users/graywheeler/Desktop/bookstore/backend/Bookstore.API/publish/Bookstore.API
-/Users/graywheeler/Desktop/bookstore/backend/Bookstore.API/publish/publish/web.config
 /Users/graywheeler/Desktop/bookstore/backend/Bookstore.API/publish/appsettings.Development.json
 /Users/graywheeler/Desktop/bookstore/backend/Bookstore.API/publish/appsettings.json
-/Users/graywheeler/Desktop/bookstore/backend/Bookstore.API/publish/publish/appsettings.Development.json
-/Users/graywheeler/Desktop/bookstore/backend/Bookstore.API/publish/publish/appsettings.json
-/Users/graywheeler/Desktop/bookstore/backend/Bookstore.API/publish/publish/Bookstore.API.deps.json
-/Users/graywheeler/Desktop/bookstore/backend/Bookstore.API/publish/publish/Bookstore.API.runtimeconfig.json
-/Users/graywheeler/Desktop/bookstore/backend/Bookstore.API/publish/publish/Bookstore.API.staticwebassets.endpoints.json
 /Users/graywheeler/Desktop/bookstore/backend/Bookstore.API/publish/Bookstore.sqlite
 /Users/graywheeler/Desktop/bookstore/backend/Bookstore.API/publish/Bookstore.API.dll
 /Users/graywheeler/Desktop/bookstore/backend/Bookstore.API/publish/Bookstore.API.deps.json

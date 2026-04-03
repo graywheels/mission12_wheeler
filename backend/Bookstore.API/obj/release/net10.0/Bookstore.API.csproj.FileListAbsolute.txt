@@ -62,9 +62,3 @@
 /Users/graywheeler/Desktop/bookstore/backend/Bookstore.API/obj/release/net10.0/Bookstore.API.pdb
 /Users/graywheeler/Desktop/bookstore/backend/Bookstore.API/obj/release/net10.0/Bookstore.API.genruntimeconfig.cache
 /Users/graywheeler/Desktop/bookstore/backend/Bookstore.API/obj/release/net10.0/ref/Bookstore.API.dll
-/Users/graywheeler/Desktop/bookstore/backend/Bookstore.API/bin/release/net10.0/publish/web.config
-/Users/graywheeler/Desktop/bookstore/backend/Bookstore.API/bin/release/net10.0/publish/appsettings.Development.json
-/Users/graywheeler/Desktop/bookstore/backend/Bookstore.API/bin/release/net10.0/publish/appsettings.json
-/Users/graywheeler/Desktop/bookstore/backend/Bookstore.API/bin/release/net10.0/publish/Bookstore.API.deps.json
-/Users/graywheeler/Desktop/bookstore/backend/Bookstore.API/bin/release/net10.0/publish/Bookstore.API.runtimeconfig.json
-/Users/graywheeler/Desktop/bookstore/backend/Bookstore.API/bin/release/net10.0/publish/Bookstore.API.staticwebassets.endpoints.json
